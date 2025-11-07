@@ -12,26 +12,38 @@ pipeline {
                 }
             }
             steps {
-                script {
-                    def cacheKey = "node-deps-${checksum('package-lock.json')}"
-
-                    cache(path: 'node-modules', key: cacheKey){
-                        sh '''
-                            echo "Checking environment versions..."
-                            node -v
-                            npm -v
-
-                            echo "Installing dependencies..."
-                            npm ci
-                        '''
-                    }
-
-                    sh '''
-                       echo "Starting application build..."
-                       npm run build
-                       echo "Build Stage complete." 
-                    '''
-                }
+script {
+            // Checksum calculates a unique hash of the file. 
+            // If package-lock.json hasn't changed, the cache is reused!
+            def cacheKey = "node-deps-${checksum('package-lock.json')}"
+            
+            // 1. Dependency Caching: This is the biggest speed-up
+            cache(path: 'node_modules', key: cacheKey) {
+                
+                // --- COMMANDS INSIDE THE CACHING BLOCK ---
+                sh '''
+                    echo "Checking environment versions..."
+                    node --version 
+                    npm --version
+                    
+                    echo "Installing dependencies..."
+                    # npm ci will run instantly if 'node_modules' was restored from cache.
+                    # Otherwise, it runs a clean install.
+                    npm ci
+                '''
+            }
+            // --- COMMANDS OUTSIDE THE CACHING BLOCK ---
+            
+            // 2. Build Execution: This step relies on the dependencies being installed
+            sh '''
+                echo "Starting application build..."
+                npm run build
+                
+                # Use ls -la only if you need to debug the resulting 'build' or 'dist' directory
+                # ls -la 
+                echo "Build Stage complete."
+            '''
+        }
             }
         }
         /*Stage 2*/
