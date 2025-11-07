@@ -38,6 +38,23 @@ pipeline {
                 '''
             }
         }
+        /*Stage 3*/
+        stage('End-to-End'){
+            agent {
+                docker{
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy' //pull playwright image
+                    reuseNode true         //tells the build tool to reuse an existing image layer or artifact from a previous stage
+                                           //rather than re-running the installation
+                }
+            }
+            steps{
+                sh '''
+                    npm install -g serve 
+                    serve -s build
+                    npx playwright test
+                '''
+            }
+        }
     }
 
     /*Post*/
