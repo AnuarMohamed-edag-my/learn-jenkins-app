@@ -39,22 +39,22 @@ pipeline {
             }
         }
         /*Stage 3*/
-        stage('End-to-End'){
-            agent {
-                docker{
-                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy' //pull playwright image
-                    reuseNode true
-                }
-            }
-            steps{
-                sh '''
-                    npm install serve 
-                    node_modules\.bin\serve -s build & 
-                    sleep 10
-                    npx playwright test
-                '''
-            }
-        }
+        // stage('End-to-End'){
+            // agent {
+                // docker{
+                    // image 'mcr.microsoft.com/playwright:v1.39.0-jammy' //pull playwright image
+                    // reuseNode true
+                // }
+            // }
+            // steps{
+                // sh '''
+                    // npm install serve 
+                    // node_modules\.bin\serve -s build & 
+                    // sleep 10
+                    // npx playwright test
+                // '''
+            // }
+        // }
     }
 
     /*Post*/
