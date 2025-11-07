@@ -66,7 +66,7 @@ script {
         stage('End-to-End'){
             agent {
                 docker{
-                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy' //pull playwright image
+                    image 'mcr.microsoft.com/playwright:v1.56.1-noble' //pull playwright image
                     reuseNode true
                 }
             }
