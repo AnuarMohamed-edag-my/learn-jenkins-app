@@ -43,14 +43,13 @@ pipeline {
             agent {
                 docker{
                     image 'mcr.microsoft.com/playwright:v1.39.0-jammy' //pull playwright image
-                    reuseNode true         //tells the build tool to reuse an existing image layer or artifact from a previous stage
-                                           //rather than re-running the installation
+                    reuseNode true
                 }
             }
             steps{
                 sh '''
-                    npm install -g serve 
-                    serve -s build
+                    npm install serve 
+                    node_modules\.bin\serve -s build
                     npx playwright test
                 '''
             }
