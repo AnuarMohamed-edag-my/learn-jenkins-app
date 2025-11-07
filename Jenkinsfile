@@ -2,28 +2,23 @@ pipeline {
     agent any
 
     stages {
-        stage('w/o Docker') {
-            steps {
-                sh '''
-                    echo "Without Docker"
-                    #list all files incl. hidden files 
-                    ls -la
-                    touch container-no.txt
-                '''
-            }
-        }
-        stage('w Docker') {
-            agent{
+        stage('Build') {
+            agent {
                 docker{
-                    image 'node:18-alpine'
-                    reuseNode true
+                    image 'node:18-alpine' //pull node.js -> 18-alpine image
+                    reuseNode true //tells the build tool to reuse an existing image layer or artifact from a previous stage
+                                   //rather than re-running the installation
                 }
             }
+
             steps {
                 sh '''
-                    echo "With Docker"
                     ls -la
-                    touch container-yes.txt
+                    node --version 
+                    npm --version
+                    npm ci
+                    npm run build
+                    ls -la
                 '''
             }
         }
