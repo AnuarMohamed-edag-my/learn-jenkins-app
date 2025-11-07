@@ -12,14 +12,26 @@ pipeline {
                 }
             }
             steps {
-                sh '''
-                    #ls -la
-                    node --version 
-                    npm --version
-                    npm ci
-                    npm run build
-                    #ls -la
-                '''
+                script {
+                    def cacheKey = "node-deps-${checksum('package-lock.json')}"
+
+                    cache(path: 'node-modules', key: cacheKey){
+                        sh '''
+                            echo "Checking environment versions..."
+                            node -v
+                            npm -v
+
+                            echo "Installing dependencies..."
+                            npm ci
+                        '''
+                    }
+
+                    sh '''
+                       echo "Starting application build..."
+                       npm run build
+                       echo "Build Stage complete." 
+                    '''
+                }
             }
         }
         /*Stage 2*/
