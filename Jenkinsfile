@@ -16,7 +16,7 @@ pipeline {
                     // 1. Define the unique key based on the lock file
                     def cacheKey = "node-deps-${sha256('package-lock.json')}"
                     // 2. Wrap the installation in the 'cache' block
-                        cache(cacheId: cacheKey, includes: ['node_modules']) {
+                    cache(path: 'node_modules', key : cacheKey){
                         // This block executes ONLY if the cache misses (first run, or lock file changed)
                         sh '''
                             echo "Cache Miss or Initial Run: Installing all dependencies..."
