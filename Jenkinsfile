@@ -20,7 +20,6 @@ pipeline {
                     // If restored, it skips 'npm install'. If not, it saves the new node_modules.
                     cache(path: 'node_modules', key: "${NPM_CACHE_KEY}") {
                         echo 'Installing/Restoring dependencies...'
-                        sh 'npm install'
                         sh 'npm ci'
                     }
                 }
