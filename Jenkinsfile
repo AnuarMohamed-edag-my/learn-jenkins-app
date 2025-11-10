@@ -1,10 +1,8 @@
 pipeline {
     agent any
 
-    environment {
-        // Define the cache key prefix based on your project name
-        NPM_CACHE_KEY = "npm-deps-${env.JOB_NAME}-${checksum("/var/jenkins_home/workspace/learn-jenkns-app/package-lock.json")}"
-    }
+    // REMOVED the problematic 'environment' block here
+    // The key is now calculated inside the 'script' block below
 
     stages {
         stage('Checkout') {
@@ -12,27 +10,33 @@ pipeline {
                 checkout scm
             }
         }
+
         stage('Install Dependencies & Cache') {
-            // Use 'any' agent for checkout and caching, or a dedicated build agent if preferred
             steps {
                 script {
-                    // The cache step handles restoring dependencies if package-lock.json hasn't changed.
-                    // If restored, it skips 'npm install'. If not, it saves the new node_modules.
-                    cache(path: 'node_modules', key: "${NPM_CACHE_KEY}") {
+                    // 1. Calculate the dependency key using the AVAILABLE 'sha1' step
+                    //    and the RELATIVE path to the lock file.
+                    def lockFileHash = sha1(file: 'package-lock.json')
+                    def cacheKey = "npm-deps-${env.JOB_NAME}-${lockFileHash}"
+                    
+                    echo "Calculated Cache Key: ${cacheKey}"
+                    
+                    // 2. Use the cache step with the dynamically generated key
+                    //    'npm ci' runs ONLY if the cache is missed.
+                    cache(path: 'node_modules', key: cacheKey) {
                         echo 'Installing/Restoring dependencies...'
-                        sh 'npm ci'
+                        sh 'npm ci' 
                     }
                 }
             }
         }
 
-        /*Stage 1*/
+        /*Stage 1: Build - Dependencies are now in the workspace*/
         stage('Build') {
             agent {
                 docker{
-                    image 'node:18-alpine' //pull node.js -> 18-alpine image
-                    reuseNode true         //tells the build tool to reuse an existing image layer or artifact from a previous stage
-                                           //rather than re-running the installation
+                    image 'node:18-alpine'
+                    reuseNode true 
                 }
             }
             steps {
@@ -40,24 +44,22 @@ pipeline {
                     ls -la
                     node --version 
                     npm --version
-                    #npm ci
                     npm run build
                     ls -la
                 '''
             }
         }
 
-        //NEW STAGE 
+        // --- NEW STAGE: Parallel Testing ---
         stage('Tests'){
-            parallel{ /*Run Stages in Parallel*/
-
-                /*Stage 2*/
+            parallel{ 
+                
+                /*Stage 2: Unit Test*/
                 stage('Unit Test'){
                     agent {
                         docker{
-                            image 'node:18-alpine' //pull node.js -> 18-alpine image
-                            reuseNode true         //tells the build tool to reuse an existing image layer or artifact from a previous stage
-                                                //rather than re-running the installation
+                            image 'node:18-alpine' 
+                            reuseNode true 
                         }
                     }
                     steps{
@@ -66,19 +68,18 @@ pipeline {
                             npm test
                         '''
                     }
-                    /*Post*/
                     post{
                         always{
                             junit 'jest-results/junit.xml'
                         }
                     }
-                }//stage 2 end 
+                }
 
-                /*Stage 3*/
+                /*Stage 3: E2E*/
                 stage('E2E'){
                     agent {
                         docker{
-                            image 'mcr.microsoft.com/playwright:v1.39.0-jammy' //pull playwright image
+                            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
                             reuseNode true
                         }
                     }
@@ -90,14 +91,13 @@ pipeline {
                             npx playwright test --reporter=html
                         '''
                     }
-                    /*Post*/
                     post{
                         always{
-                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
                         }
                     }
-                }//stage 3 end 
-            }//parallel
+                }
+            }
         }
-    }//End Stage
+    }
 }
