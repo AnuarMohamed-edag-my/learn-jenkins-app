@@ -16,7 +16,7 @@ pipeline {
                 script {
                     // 1. Calculate the dependency key using the AVAILABLE 'sha1' step
                     //    and the RELATIVE path to the lock file.
-                    def lockFileHash = sha1(file: 'package-lock.json')
+                    def lockFileHash = sha1(file: '/var/jenkins_home/workspace/learn-jenkns-app/package-lock.json')
                     def cacheKey = "npm-deps-${env.JOB_NAME}-${lockFileHash}"
                     
                     echo "Calculated Cache Key: ${cacheKey}"
