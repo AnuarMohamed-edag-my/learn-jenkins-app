@@ -33,7 +33,7 @@ pipeline {
                         docker{
                             image 'node:18-alpine' //pull node.js -> 18-alpine image
                             reuseNode true         //tells the build tool to reuse an existing image layer or artifact from a previous stage
-                                                //rather than re-running the installation
+                                                   //rather than re-running the installation
                         }
                     }
                     steps{
@@ -76,4 +76,38 @@ pipeline {
             }//parallel
         }
     }//End Stage
+
+    options{
+        parallel(
+            'Build & Test': {
+                stage('Build and Test'){
+                    agent {
+                        docker{
+                            image 'node:18-alpine' //pull node.js -> 18-alpine image
+                            reuseNode true         //tells the build tool to reuse an existing image layer or artifact from a previous stage
+                                                   //rather than re-running the installation
+                        }
+                    }
+                    steps{
+                        echo 'Running build and Test in parallel....'
+                        parallel(
+                            'Build':{
+                                sh 'ls -la'
+                                sh 'node --version' 
+                                sh 'npm --version'
+                                sh 'npm ci'
+                                sh 'npm run build'
+                                sh 'ls -la'
+                            },
+                            'Test':{
+                            sh 'test -f build/index.html'
+                            sh 'npm test'
+
+                            }
+                        )
+                    }
+                }
+            }
+        )
+    }
 }
