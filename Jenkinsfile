@@ -26,7 +26,8 @@ pipeline {
         //NEW STAGE 
         stage('Tests'){
             parallel{ /*Run Stages in Parallel*/
-                    /*Stage 2*/
+
+                /*Stage 2*/
                 stage('Unit Test'){
                     agent {
                         docker{
@@ -41,9 +42,16 @@ pipeline {
                             npm test
                         '''
                     }
+                    /*Post*/
+                    post{
+                        always{
+                            junit 'jest-results/junit.xml'
+                        }
+                    }
                 }//stage 2 end 
+
                 /*Stage 3*/
-                stage('End-to-End'){
+                stage('E2E'){
                     agent {
                         docker{
                             image 'mcr.microsoft.com/playwright:v1.39.0-jammy' //pull playwright image
@@ -57,6 +65,12 @@ pipeline {
                             sleep 10
                             npx playwright test --reporter=html
                         '''
+                    }
+                    /*Post*/
+                    post{
+                        always{
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                        }
                     }
                 }//stage 3 end 
             }//parallel
