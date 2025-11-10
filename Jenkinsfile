@@ -14,18 +14,24 @@ pipeline {
         stage('Install Dependencies & Cache') {
             steps {
                 script {
-                    // 1. Calculate the dependency key using the AVAILABLE 'sha1' step
-                    //    and the RELATIVE path to the lock file.
-                    def lockFileHash = sha1(file: '/var/jenkins_home/workspace/learn-jenkns-app/package-lock.json')
+                    // 1. Calculate the dependency key using the available 'sha1' step
+                    def lockFileHash = sha1(file: 'package-lock.json')
                     def cacheKey = "npm-deps-${env.JOB_NAME}-${lockFileHash}"
                     
                     echo "Calculated Cache Key: ${cacheKey}"
-                    
-                    // 2. Use the cache step with the dynamically generated key
-                    //    'npm ci' runs ONLY if the cache is missed.
-                    cache(path: 'node_modules', key: cacheKey) {
-                        echo 'Installing/Restoring dependencies...'
-                        sh 'npm ci' 
+
+                    // 2. Use the low-level 'jobcacher' step with 'includes' and 'key' 
+                    //    This attempts to restore 'node_modules' based on the key.
+                    jobcacher(cachingDisabled: false, includes: ['node_modules'], key: cacheKey) {
+                        
+                        // 3. Conditional execution: Check if the cache was restored.
+                        if (fileExists('node_modules')) {
+                            echo 'Cache hit: Dependencies restored. Skipping npm ci.'
+                        } else {
+                            // 4. Cache Miss: Run installation and let the 'jobcacher' step save the result.
+                            echo 'Cache miss: Installing dependencies...'
+                            sh 'npm ci' 
+                        }
                     }
                 }
             }
