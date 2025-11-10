@@ -14,7 +14,7 @@ pipeline {
             steps {
                 script{
                     // 1. Define the unique key based on the lock file
-                    def cacheKey = "node-deps-${checksum('package-lock.json')}"
+                    def cacheKey = "node-deps-${sha256('package-lock.json')}"
                     // 2. Wrap the installation in the 'cache' block
                     cache(path: 'node_modules', key : cacheKey){
                         // This block executes ONLY if the cache misses (first run, or lock file changed)
@@ -89,12 +89,4 @@ pipeline {
 
     }
 
-    /*Post*/
-    post{
-        always{
-            junit 'jest-results/junit.xml'
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
-
-        }
-    }
 }
