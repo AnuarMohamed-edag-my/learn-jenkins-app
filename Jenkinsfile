@@ -8,7 +8,7 @@ pipeline {
                 checkout scm
                 script{
                     // Requires Pipeline Utility Steps Plugin
-                    def lockFileHash = sha1(file: '/var/jenkins_home/workspace/learn-jenkns-app/package-lock.json') 
+                    def lockFileHash = sha1(file: 'package-lock.json') 
                     def cacheKey = "npm-deps-${env.JOB_NAME}-${lockFileHash}"
                     
                     cache(path: 'node_modules', key: cacheKey) {
