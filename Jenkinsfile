@@ -2,21 +2,6 @@ pipeline {
     agent any
 
     stages {
-        /*Check Cache*/
-        stage('Checkout & Install'){
-            steps{
-                checkout scm
-                script{
-                    // Requires Pipeline Utility Steps Plugin
-                    def lockFileHash = sha1(file: 'package-lock.json') 
-                    def cacheKey = "npm-deps-${env.JOB_NAME}-${lockFileHash}"
-                    
-                    cache(path: 'node_modules', key: cacheKey) {
-                        // This runs ONLY if the lock file has changed (cache miss)
-                        sh 'npm ci'
-                }
-            }
-        }
         /*Stage 1*/
         stage('Build') {
             agent {
@@ -28,12 +13,12 @@ pipeline {
             }
             steps {
                 sh '''
-                    #ls -la
-                    #node --version 
-                    #npm --version
+                    ls -la
+                    node --version 
+                    npm --version
                     #npm ci
                     npm run build
-                    #ls -la
+                    ls -la
                 '''
             }
         }
