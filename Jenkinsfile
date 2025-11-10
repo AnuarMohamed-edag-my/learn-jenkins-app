@@ -1,7 +1,32 @@
 pipeline {
     agent any
 
+    environment {
+        // Define the cache key prefix based on your project name
+        NPM_CACHE_KEY = "npm-deps-${env.JOB_NAME}-${checksum("package-lock.json")}"
+    }
+
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Install Dependencies & Cache') {
+            // Use 'any' agent for checkout and caching, or a dedicated build agent if preferred
+            steps {
+                script {
+                    // The cache step handles restoring dependencies if package-lock.json hasn't changed.
+                    // If restored, it skips 'npm install'. If not, it saves the new node_modules.
+                    cache(path: 'node_modules', key: "${NPM_CACHE_KEY}") {
+                        echo 'Installing/Restoring dependencies...'
+                        sh 'npm install'
+                        sh 'npm ci'
+                    }
+                }
+            }
+        }
+
         /*Stage 1*/
         stage('Build') {
             agent {
