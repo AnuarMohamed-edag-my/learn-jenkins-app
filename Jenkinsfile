@@ -14,7 +14,7 @@ pipeline {
             steps {
                 script{
                     // 1. Define the unique key based on the lock file
-                    def cacheKey = "node-deps-${checksum('learn-jenkins-app\package-lock.json')}"
+                    def cacheKey = "node-deps-${checksum('package-lock.json')}"
                     // 2. Wrap the installation in the 'cache' block
                     cache(path: 'node_modules', key : cacheKey){
                         // This block executes ONLY if the cache misses (first run, or lock file changed)
