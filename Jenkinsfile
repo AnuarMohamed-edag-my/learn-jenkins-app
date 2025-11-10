@@ -12,14 +12,25 @@ pipeline {
                 }
             }
             steps {
-                sh '''
-                    ls -la
-                    node --version 
-                    npm --version
-                    npm ci
-                    npm run build
-                    ls -la
-                '''
+                script{
+                    // 1. Define the unique key based on the lock file
+                    def cacheKey = "node-deps-${checksum('package-lock.json')}"
+                    // 2. Wrap the installation in the 'cache' block
+                    cache(path: 'node_modules', key : cacheKey){
+                        // This block executes ONLY if the cache misses (first run, or lock file changed)
+                        sh '''
+                            echo "Cache Miss or Initial Run: Installing all dependencies..."
+                            npm ci
+                        '''
+                    }
+                    // 3. The build step always runs (using the restored/new node_modules)
+                    sh '''
+                        echo "Dependencies ready. Running build..."
+                        npm run build
+                        ls -la
+                    '''
+
+                }
             }
         }
 
