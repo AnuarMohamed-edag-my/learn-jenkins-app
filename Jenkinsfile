@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Define the cache key prefix based on your project name
-        NPM_CACHE_KEY = "npm-deps-${env.JOB_NAME}-${checksum("package-lock.json")}"
+        NPM_CACHE_KEY = "npm-deps-${env.JOB_NAME}-${checksum("/var/jenkins_home/workspace/learn-jenkns-app/package-lock.json")}"
     }
 
     stages {
