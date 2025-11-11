@@ -26,12 +26,16 @@ pipeline {
                         
                         // 3. Conditional execution: Check if the cache was restored.
                         if (fileExists('node_modules')) {
-                            echo 'Cache hit: Dependencies restored. Skipping npm ci. TAKPAYAH NAK NPM CI DAH......'
+                            sh'''
+                                echo 'Cache hit: Dependencies restored. Skipping npm ci. TAKPAYAH NAK NPM CI DAH......'
+                            '''
                         } else {
                             // 4. Cache Miss: Run installation and let the 'jobcacher' step save the result.
-                            echo 'FILE NODE_MODULES TAKDE. SO NAK KENE INSTALL la.......'
-                            echo 'Cache miss: Installing dependencies...'
-                            sh 'npm ci' 
+                            sh'''
+                                echo 'FILE NODE_MODULES TAKDE. SO NAK KENE INSTALL la.......'
+                                echo 'Cache miss: Installing dependencies...'
+                                npm ci 
+                            '''
                         }
                     }
                 }
