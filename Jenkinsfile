@@ -22,7 +22,7 @@ pipeline {
 
                     // 2. Use the low-level 'jobcacher' step with 'includes' and 'key' 
                     //    This attempts to restore 'node_modules' based on the key.
-                    jobcacher(cachingDisabled: false, includes: ['node_modules'], key: cacheKey){
+                    jobcacher(cachingDisabled: false, includes: ['node_modules'], key: cacheKey) {
                         
                         // 3. Conditional execution: Check if the cache was restored.
                         if (fileExists('node_modules')) {
@@ -104,22 +104,6 @@ pipeline {
                         }
                     }
                 }
-            }
-        }
-
-        /*Stage 4: Deploy*/
-        stage('Deploy') {
-            agent {
-                docker{
-                    image 'node:18-alpine'
-                    reuseNode true 
-                }
-            }
-            steps {
-                sh '''
-                    npm install netlify-cli -g 
-                    netlify --version
-                '''
             }
         }
     }
