@@ -85,11 +85,9 @@ pipeline {
                 /*Stage 3: E2E*/
                 stage('E2E'){
                     steps{
-                        sh '''
-                            echo "---- START: Network Diagnostic for Docker Registry ----"
-                            sh 'curl -v https://mcr.microsoft.com/v2/ || true'
-                            echo "---- END: Network Diagnostic ----"
-                        '''
+                        echo "---- START: Network Diagnostic for Docker Registry ----"
+                        sh 'curl -v https://mcr.microsoft.com/v2/ || true'
+                        echo "---- END: Network Diagnostic ----"
                     }
                     agent{
                         docker{
