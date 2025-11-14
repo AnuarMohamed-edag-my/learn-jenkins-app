@@ -84,14 +84,7 @@ pipeline {
 
                 /*Stage 3: E2E*/
                 stage('E2E'){
-                    steps{
-                        sh '''
-                            echo "---- START: Network Diagnostic for Docker Registry ----"
-                            sh 'curl -v https://mcr.microsoft.com/v2/ || true'
-                            echo "---- END: Network Diagnostic ----"
-                        '''
-                    }
-                    agent{
+                    agent {
                         docker{
                             image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
                             reuseNode true
