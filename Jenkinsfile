@@ -111,7 +111,7 @@ pipeline {
         stage('Deploy'){
             agent{
                 docker{
-                    image 'learn-jenkns-app/node-netlify:18-alpine'
+                    image '/var/jenkins_home/workspace/learn-jenkns-app/node-netlify:18-alpine'
                     reuseNode true
                 }
             }
