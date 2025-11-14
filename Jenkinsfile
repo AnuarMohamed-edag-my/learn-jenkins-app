@@ -48,11 +48,11 @@ pipeline {
             }
             steps {
                 sh '''
-                    #ls -la
+                    ls -la
                     node --version 
                     npm --version
                     npm run build
-                    #ls -la
+                    ls -la
                 '''
             }
         }
@@ -107,7 +107,7 @@ pipeline {
             }
         }
 
-        /*Stage 4: Deploy - OPTIMIZED USING A CUSTOM IMAGE*/
+        /*Stage 4: Deploy*/
         stage('Deploy'){
             agent{
                 docker{
@@ -116,20 +116,8 @@ pipeline {
                 }
             }
             steps{
-                script{
-                    def deployCacheKey = "netlify-cli-20"
-
-                    jobcacher(cachingDisabled:false, includes:['node_modules/netlify-cli'], key:deployCacheKey){
-                        if (fileExists('node_modules/netlify-cli')){
-                            echo 'Cache hit: Netlify CLI restored.'
-                        }
-                        else{
-                            echo 'Cache miss: Installing Netlify CLI....'
-                            sh 'npm install netlify-cli@20.1.1'
-                        }
-                    }
-                }
                 sh'''
+                    npm install netlify-cli@20.1.1
                     node_modules/.bin/netlify --version 
                 '''
 
