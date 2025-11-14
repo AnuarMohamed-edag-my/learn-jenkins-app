@@ -84,14 +84,6 @@ pipeline {
 
                 /*Stage 3: E2E*/
                 stage('E2E'){
-                    /*Dianostic if Docker Pull Fails*/
-                    steps{
-                        sh'''
-                            echo "---- START: Network Diagnostic for Docker Registry ----"
-                            curl -v https://mcr.microsoft.com/v2/
-                            echo "---- END: Network Dianostic ----"
-                        '''
-                    }
                     agent {
                         docker{
                             image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
@@ -128,6 +120,7 @@ pipeline {
                     npm install netlify-cli@20.1.1
                     node_modules/.bin/netlify --version 
                 '''
+
             }
         }
     }
