@@ -87,7 +87,7 @@ pipeline {
                     steps{
                         sh '''
                             echo "---- START: Network Diagnostic for Docker Registry ----"
-                            curl -v https://mcr.microsoft.com/v2/ || true
+                            sh 'curl -v https://mcr.microsoft.com/v2/ || true'
                             echo "---- END: Network Diagnostic ----"
                         '''
                     }
