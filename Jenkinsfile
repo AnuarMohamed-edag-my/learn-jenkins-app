@@ -85,12 +85,12 @@ pipeline {
                 /*Stage 3: E2E*/
                 stage('E2E'){
                     steps{
-                            echo "--- START: Network Diagnostic for Docker Registry ---"
-                            // Use '|| true' to force a zero exit code regardless of the curl result
-                            sh 'apk add --no-cache curl || apt-get update && apt-get install -y curl'
-                            sh 'curl -v https://mcr.microsoft.com/v2/ || true' 
-                            echo "--- END: Network Diagnostic ---"
-                        }
+                        echo "--- START: Network Diagnostic for Docker Registry ---"
+                        // Use '|| true' to force a zero exit code regardless of the curl result
+                        sh 'apk add --no-cache curl || apt-get update && apt-get install -y curl'
+                        sh 'curl -v https://mcr.microsoft.com/v2/ || true' 
+                        echo "--- END: Network Diagnostic ---"
+                    }
                     agent {
                         docker{
                             image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
