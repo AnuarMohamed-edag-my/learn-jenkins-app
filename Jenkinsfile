@@ -4,9 +4,20 @@ pipeline {
     stages {
         /*Stage 1: Build - Dependencies are now in the workspace*/
         stage('Build') {
+            agent{
+                docker{
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
             steps {
                 sh '''
-                    echo "Hello"
+                    ls -la 
+                    node --version 
+                    npm --version
+                    npm ci
+                    npm run build 
+                    ls -la 
                 '''
 
             }
