@@ -2,6 +2,11 @@ pipeline {
     agent any
 
     stages {
+        stage('Checkout'){
+            steps{
+                checkout scm
+            }
+        }
         /*Stage 1: Build - Dependencies are now in the workspace*/
         stage('Build') {
             agent{
