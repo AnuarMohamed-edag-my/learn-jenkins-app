@@ -21,6 +21,7 @@ pipeline {
                     npm ci
                     ls -la
                 '''
+                
             }
         }
 
