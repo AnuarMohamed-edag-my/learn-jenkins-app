@@ -53,10 +53,7 @@ pipeline {
                 '''
             }
         }
-        /*Parallel Stages -> 2in1*/
-        Stage{
 
-        }
         /*Stage 2: Test */
         stage('Test') {
             agent{
