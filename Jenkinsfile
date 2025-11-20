@@ -69,7 +69,7 @@ pipeline {
                 '''
             }
         }
-        /*Stage: End-to-End Test*/
+        /*Stage 3: End-to-End Test*/
         stage('E2E'){
             agent {
                 docker{
@@ -80,9 +80,10 @@ pipeline {
             }
             steps {
                 sh'''
-                    npm install serve
-                    node_modules/.bin/serve -s build
-                    npx playwright test
+                    npm install serve 
+                    node_modules/.bin/serve -s build & 
+                    sleep 10
+                    npx playwright test --reporter=html
                 '''
             }
         }
