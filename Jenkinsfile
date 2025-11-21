@@ -102,5 +102,18 @@ pipeline {
                 }
             }
         }//end Parallel Stage
-    }
+        stage('Deploy'){
+            agent{
+                docker{
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps{
+                sh'''
+                    echo "This is Deploy Stage"
+                '''
+            }
+        }
+    }//end of Stages 
 }
