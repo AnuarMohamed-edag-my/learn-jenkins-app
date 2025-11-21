@@ -56,37 +56,39 @@ pipeline {
 
         /*Parallel Testing Stages*/
         stage('Test'){
-            /*Stage 2: Test */
-            stage('Unit Test') {
-                agent{
-                    docker{
-                        image 'node:18-alpine'
-                        reuseNode true
+            parallel{
+                /*Stage 2: Test */
+                stage('Unit Test') {
+                    agent{
+                        docker{
+                            image 'node:18-alpine'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        sh '''
+                            test -f build/index.html
+                            npm test
+                        '''
                     }
                 }
-                steps {
-                    sh '''
-                        test -f build/index.html
-                        npm test
-                    '''
-                }
-            }
-            /*Stage 3: End-to-End Test*/
-            stage('E2E'){
-                agent {
-                    docker{
-                        /*Pull Playwright Image*/
-                        image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
-                        reuseNode true
+                /*Stage 3: End-to-End Test*/
+                stage('E2E'){
+                    agent {
+                        docker{
+                            /*Pull Playwright Image*/
+                            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                            reuseNode true
+                        }
                     }
-                }
-                steps {
-                    sh'''
-                        npm install serve 
-                        node_modules/.bin/serve -s build & 
-                        sleep 10
-                        npx playwright test #--reporter=html
-                    '''
+                    steps {
+                        sh'''
+                            npm install serve 
+                            node_modules/.bin/serve -s build & 
+                            sleep 10
+                            npx playwright test #--reporter=html
+                        '''
+                    }
                 }
             }
         }//end Parallel Stage
