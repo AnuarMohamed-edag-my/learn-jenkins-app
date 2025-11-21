@@ -71,6 +71,11 @@ pipeline {
                             npm test
                         '''
                     }
+                    post{
+                        always{
+                            junit 'jest-results/junit.xml'
+                        }
+                    }
                 }
                 /*Stage 3: End-to-End Test*/
                 stage('E2E'){
@@ -92,10 +97,5 @@ pipeline {
                 }
             }
         }//end Parallel Stage
-    }
-    post{
-        always{
-            junit 'jest-results/junit.xml'
-        }
     }
 }
