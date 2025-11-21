@@ -1,6 +1,8 @@
 pipeline {
     agent any
 
+    //4e87976e-4e25-4c6a-98f6-ac732bb68953 -> netlify site id 
+
     stages {
         stage('Checkout'){
             steps{
@@ -111,7 +113,7 @@ pipeline {
             }
             steps{
                 sh'''
-                    echo "This is Deploy Stage"
+                    netlify --version
                 '''
             }
         }
