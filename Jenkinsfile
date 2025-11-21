@@ -113,7 +113,7 @@ pipeline {
             }
             steps{
                 sh'''
-                    netlify --version
+                    npm install netlify-cli@20.1.1
                 '''
             }
         }
