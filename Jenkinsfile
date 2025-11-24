@@ -122,7 +122,12 @@ pipeline {
             }
             steps{
                 sh'''
-                    npm install netlify-cli@20.1.1
+                    if ! node_modules/.bin/netlify --version 2>/dev/null; then
+                        npm install netlify-cli@20.1.1
+                    else
+                        echo "Netlify CLI found, skipping install."
+                    fi
+                    
                     node_modules/.bin/netlify --version
                     echo "Deploying to Production. Site ID: $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
