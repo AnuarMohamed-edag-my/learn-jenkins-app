@@ -116,16 +116,16 @@ pipeline {
         stage('Deploy'){
             agent{
                 docker{
-                    image 'my-registry/node-netlify:18'
+                    image 'node:18-alpine'
                     reuseNode true
                 }
             }
             steps{
                 sh'''
                     npm install netlify-cli@20.1.1
-                    netlify --version
+                    node_modules/.bin/netlify --version
                     echo "Deploying to Production. Site ID: $NETLIFY_SITE_ID"
-                    netlify status
+                    node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --prod --message="Deploy To Production"
                 '''
             }
