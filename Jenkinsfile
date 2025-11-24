@@ -121,13 +121,22 @@ pipeline {
                 }
             }
             steps{
-                sh'''
-                    npm install netlify-cli@20.1.1
-                    node_modules/.bin/netlify --version
-                    echo "Deploying to Production. Site ID: $NETLIFY_SITE_ID"
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --prod --message="Deploy To Production"
-                '''
+                cache(path: "node_modules", key: "netlify-cli-cache-${hashFiles('package-lock.json')}") {
+                    sh '''
+                        NETLIFY_CLI="./node_modules/.bin/netlify"
+
+                        # Check if the executable exists after cache restoration
+                        if [ ! -x "$NETLIFY_CLI" ]; then
+                            echo "Netlify CLI not found in cache. Installing..."
+                            # Since we are caching node_modules, this is a clean install
+                            npm install netlify-cli@20.1.1 
+                        else
+                            echo "Netlify CLI found via cache, skipping install."
+                        fi
+
+                        # Run deployment command
+                        $NETLIFY_CLI deploy --dir=build --prod --message="Deploy To Production"
+                    '''
             }
         }
     }//end of Stages 
