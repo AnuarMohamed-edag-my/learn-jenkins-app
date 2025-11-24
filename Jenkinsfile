@@ -127,7 +127,7 @@ pipeline {
                     echo "Deploying to Production. Site ID: $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --prod --message="Deploy To Production"
-                    echo "Test Git Polling.."
+                    echo "Test Git Polling."
                 '''
             }
         }
