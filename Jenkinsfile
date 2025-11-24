@@ -122,11 +122,21 @@ pipeline {
             }
             steps{
                 sh'''
-                    npm install netlify-cli@20.1.1
-                    node_modules/.bin/netlify --version
+                    NETLIFY_CLI="./node_modules/.bin/netlify"
+                    
+                    # Use 'test -x' to check if the executable file exists at the expected path
+                    if [ ! -x "$NETLIFY_CLI" ]; then
+                        echo "Netlify CLI not found locally. Installing..."
+                        npm install netlify-cli@20.1.1
+                    else
+                        echo "Netlify CLI found locally, skipping npm install."
+                    fi
+
+                    # Deployment steps using the local executable
+                    $NETLIFY_CLI --version
                     echo "Deploying to Production. Site ID: $NETLIFY_SITE_ID"
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --prod --message="Deploy To Production"
+                    $NETLIFY_CLI status
+                    $NETLIFY_CLI deploy --dir=build --prod --message="Deploy To Production"
                 '''
             }
         }
