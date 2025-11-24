@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     triggers{
+        cron('0 3 * * 1-5')
         /*Git Polling*/
         pollSCM('* * * * *')
     }
