@@ -114,8 +114,26 @@ pipeline {
                 }
             }
         }//end Parallel Stage
-        /*Stage 4: Deploy*/
-        stage('Deploy'){
+        /*Stage 4: Deploy Staging*/
+        stage('Deploy Staging'){
+            agent{
+                docker{
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps{
+                sh'''
+                    npm install netlify-cli@20.1.1
+                    node_modules/.bin/netlify --version
+                    echo "Deploying to Staging. Site ID: $NETLIFY_SITE_ID"
+                    node_modules/.bin/netlify status
+                    node_modules/.bin/netlify deploy --dir=build  
+                '''
+            }
+        }
+        /*Stage 5: Deploy Prod*/
+        stage('Deploy Prod.'){
             agent{
                 docker{
                     image 'node:18-alpine'
@@ -132,7 +150,7 @@ pipeline {
                 '''
             }
         }
-        /*Stage 5: Production E2E*/
+        /*Stage 6: Production E2E*/
         stage('Prod E2E'){
             agent {
                 docker{
