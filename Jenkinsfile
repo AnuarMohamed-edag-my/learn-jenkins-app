@@ -134,7 +134,9 @@ pipeline {
         }
         stage('Approval'){
             steps{
-                input message: 'Do you wish to Deploy to Production?', ok: 'Yes, I\'m Sure!'
+                timeout(time: 15, unit: 'MINUTES') {
+                    input message: 'Do you wish to Deploy to Production?', ok: 'Yes, I am Sure!'
+                }
             }
         }
 
