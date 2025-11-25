@@ -9,7 +9,8 @@ pipeline {
 
     environment{
         NETLIFY_SITE_ID = '4e87976e-4e25-4c6a-98f6-ac732bb68953'
-        NETLIFY_AUTH_TOKEN = credentials('netlify-token') 
+        NETLIFY_AUTH_TOKEN = credentials('netlify-token')
+
     }
 
     stages {
@@ -107,12 +108,13 @@ pipeline {
                     }
                     post{
                         always{
-                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright Local', reportTitles: '', useWrapperFileDirectly: true])
                         }
                     }
                 }
             }
         }//end Parallel Stage
+        /*Stage 4: Deploy*/
         stage('Deploy'){
             agent{
                 docker{
@@ -128,6 +130,29 @@ pipeline {
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --prod --message="Deploy To Production"
                 '''
+            }
+        }
+        /*Stage 5: Production E2E*/
+        stage('Prod E2E'){
+            agent {
+                docker{
+                    /*Pull Playwright Image*/
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    reuseNode true
+                }
+            }
+            environment{
+                CI_ENVIRONMENT_URL = 'https://traningjenkinsanuar.netlify.app'
+            }
+            steps {
+                sh'''
+                    npx playwright test --reporter=html
+                '''
+            }
+            post{
+                always{
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright E2E Report', reportTitles: '', useWrapperFileDirectly: true])
+                }
             }
         }
     }//end of Stages 
