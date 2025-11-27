@@ -14,6 +14,16 @@ pipeline {
     }
 
     stages {
+
+        stage('Docker'){
+            steps{
+                sh'''
+                    docker build -t myName_MyPlaywright . #. means here. in this directory
+                '''
+            }
+        }
+
+
         stage('Checkout'){
             steps{
                 checkout scm
