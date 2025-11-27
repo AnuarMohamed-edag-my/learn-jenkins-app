@@ -103,7 +103,7 @@ pipeline {
                     agent {
                         docker{
                             /*Pull Playwright Image*/
-                            image 'my-playwrigh'    //'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                            image 'my-playwright'    //'mcr.microsoft.com/playwright:v1.39.0-jammy'
                             reuseNode true
                         }
                     }
