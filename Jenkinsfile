@@ -23,7 +23,6 @@ pipeline {
             }
         }
 
-
         stage('Checkout'){
             steps{
                 checkout scm
@@ -104,14 +103,14 @@ pipeline {
                     agent {
                         docker{
                             /*Pull Playwright Image*/
-                            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                            image 'my-playwright'    //'mcr.microsoft.com/playwright:v1.39.0-jammy'
                             reuseNode true
                         }
                     }
                     steps {
                         sh'''
-                            npm install serve 
-                            node_modules/.bin/serve -s build & 
+                            #npm install serve 
+                            serve -s build & #node_modules/.bin/serve -s build & 
                             sleep 10
                             npx playwright test --reporter=html
                         '''
