@@ -123,29 +123,6 @@ pipeline {
                 }
             }
         }//end Parallel Stage
-        stage('Extract Artifacts') {
-            steps {
-                script {
-                    def artifactFileName = 'test-results.txt'
-
-                    // A. Build the test-runner stage and tag it temporarily
-                    sh "docker build -t my-playwright . "
-            
-                    // B. Run a temporary container and copy the file back to the Jenkins workspace
-                    // The -v ${WORKSPACE}:/mount maps your Jenkins workspace to a temporary folder 
-                    // inside the container, allowing file transfer.
-                    sh "docker run --rm -v ${WORKSPACE}:/mount my-playwright sh -c \"cp /app/${artifactFileName} /mount/\""
-            
-                    // The file 'test-results.txt' is now available in the Jenkins workspace
-                }
-            }
-        }
-        stage('Archive Results') {
-            steps {
-                // Archives the file from the Jenkins workspace.
-                archiveArtifacts artifacts: 'test-results.txt', onlyIfSuccessful: true
-            }
-        }
         /*Stage 4: Deploy Staging*/
         // stage('Deploy Staging'){
             // agent{
