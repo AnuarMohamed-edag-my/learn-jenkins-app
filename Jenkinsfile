@@ -9,7 +9,7 @@ pipeline {
         // Name of the artifact file created inside the container
         TEST_ARTIFACT_FILENAME = 'test-results.txt' 
         // Full path to the artifact file inside the container
-        TEST_ARTIFACT_PATH_IN_CONTAINER = '/app/test-results.txt' 
+        TEST_ARTIFACT_PATH_IN_CONTAINER = '/var/jenkins_home/workspace/Anuar_Jenkins/test-results.txt' 
     }
 
     stages {
