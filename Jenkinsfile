@@ -18,7 +18,7 @@ pipeline {
         stage('Docker'){
             steps{
                 sh'''
-                    docker build -t my-playwright:${BUILD_NUMBER} . #. means here. in this directory. can put any name
+                    docker build --target test-runner -t my-playwright:${BUILD_NUMBER} . #. means here. in this directory. can put any name
                 '''
             }
         }
