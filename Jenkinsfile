@@ -19,7 +19,6 @@ pipeline {
             steps{
                 sh'''
                     docker build -t my-playwright:${BUILD_NUMBER} . #. means here. in this directory. can put any name
-                    docker build -t node-18-alpine:${BUILD_NUMBER} .
                 '''
             }
         }
@@ -70,7 +69,7 @@ pipeline {
                     ls -la 
                     node --version 
                     npm --version
-                    #npm run build 
+                    npm run build 
                     ls -la 
                 '''
             }
